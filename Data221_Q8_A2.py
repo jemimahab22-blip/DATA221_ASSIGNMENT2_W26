@@ -1,35 +1,29 @@
+from os import write
+
 from bs4 import BeautifulSoup
 import requests
 
-h2_html = requests.get("https://en.wikipedia.org/wiki/Data_science").text
-parsed_h2 = BeautifulSoup(h2_html, "html.parser")
+url="https://en.wikipedia.org/wiki/Data_science"
+headers={"User-Agent":"Mozilla/5.0"}
+contents=requests.get(url,headers=headers)
+html=contents.text
+soup=BeautifulSoup(contents.text,"html.parser")
 
-heading2 = parsed_h2.find("div", id="mw-content-text")
-if heading2 is None:
-    print("Main content not found")
-    exit()
+#Extracting all <h2> section headings from the main content area
 
-parser_output = heading2.find("div", class_="mw-parser-output")
-if parser_output is None:
-    print("Parser output not found")
-    exit()
-
-exclude = ["References", "External links", "See also", "Notes"]
-headings = []
-
-for h2 in parser_output.find_all("h2"):
-    text = h2.get_text(strip=True)
-    text1 = text.replace("[edit]", "").strip()
-
-    if any(word in text1 for word in exclude):
-        continue
-
-    headings.append(text1)
+heading_division = soup.find("div", id="mw-content-text")
+all_second_headings=heading_division.find_all("h2")
+excluded_headings={"References","External links","See also","Notes"}
 
 # Write headings to file
-with open("headings.txt", "w", encoding="utf-8") as f:
-    for heading in headings:
-        f.write(heading + "\n")
+with open("headings.txt",'w') as file:
+    for heading in all_second_headings:
+        title=heading.text.replace("[edit]","").strip()
+        if title in excluded_headings:
+            continue
+        file.write(title+"\n")
+
+
 
 
 
