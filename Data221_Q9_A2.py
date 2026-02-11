@@ -4,12 +4,11 @@ import csv
 
 url = "https://en.wikipedia.org/wiki/Machine_learning"
 
-headers = {
-    "User-Agent": "Mozilla/5.0"
-}
+headers = {"User-Agent": "Mozilla/5.0"}
 
-html = requests.get(url, headers=headers).text
-soup = BeautifulSoup(html, "html.parser")
+content= requests.get(url, headers=headers)
+html=content.text
+soup = BeautifulSoup(content.text, "html.parser")
 
 # Step 1: main content
 content_div = soup.find("div", id="mw-content-text")
@@ -62,7 +61,7 @@ for row in rows[1:]:
     table_data.append(row_data)
 
 # Step 5: save CSV
-with open("wiki_table.csv", "w", newline="", encoding="utf-8") as f:
+with open("wiki_table.csv", "w", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow(headers_list)
     writer.writerows(table_data)
